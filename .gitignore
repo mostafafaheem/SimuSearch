@@ -4,7 +4,7 @@
 .vscode/
 #Cache folder
 .alcache/
-src/agents/__pycache__/
+__pycache__/
 #Symbols folder
 .alpackages/
 #Snapshots folder
