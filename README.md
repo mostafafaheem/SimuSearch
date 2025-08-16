@@ -132,4 +132,4 @@ MIT License - see LICENSE file for details
 
 ## 🆘 Support
 
-For questions or issues, please open a GitHub issue or contact the development team.
+For questions or issues, please open a GitHub issue or contact me!
