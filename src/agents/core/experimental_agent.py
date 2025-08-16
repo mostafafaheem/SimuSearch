@@ -9,7 +9,7 @@ from langchain.tools import BaseTool
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from pydantic import BaseModel, Field
-from .base_agent import BaseAgent
+from ..base_agent import BaseAgent
 
 
 @dataclass

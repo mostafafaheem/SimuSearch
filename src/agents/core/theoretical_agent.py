@@ -10,19 +10,19 @@ from langchain.tools import BaseTool
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from pydantic import BaseModel, Field
-from .base_agent import BaseAgent
+from ..base_agent import BaseAgent
 
 
 @dataclass
 class Hypothesis:
     """Represents a scientific hypothesis"""
     id: str
+    created_at: datetime
     statement: str
     confidence: float  # 0.0 to 1.0
     evidence: List[str]
-    predictions: List[str]
     status: str = "proposed"  # proposed, testing, supported, refuted
-    created_at: datetime
+    predictions: List[str] = Field(default_factory=list)
     metadata: Dict[str, Any] = None
 
 
@@ -30,12 +30,12 @@ class Hypothesis:
 class MathematicalModel:
     """Represents a mathematical model"""
     id: str
+    created_at: datetime
     name: str
     equations: List[str]
     parameters: Dict[str, float]
     assumptions: List[str]
     domain_validity: Dict[str, Any]
-    created_at: datetime
     metadata: Dict[str, Any] = None
 
 
@@ -47,10 +47,10 @@ class LiteratureReference:
     authors: List[str]
     year: int
     journal: str
-    doi: Optional[str] = None
     relevance_score: float  # 0.0 to 1.0
     key_findings: List[str]
     added_at: datetime
+    doi: Optional[str] = None
 
 
 class TheoreticalAgent(BaseAgent):
@@ -65,7 +65,7 @@ class TheoreticalAgent(BaseAgent):
     
     def __init__(self, name: str, llm_model: str = "gpt-4", temperature: float = 0.3):
         super().__init__(name)
-        self.llm = ChatOpenAI(model=llm_model, temperature=temperature)
+        self.llm = ChatOpenAI(model=llm_model, temperature=temperature, openai_api_key=api_key)
         self.hypotheses: Dict[str, Hypothesis] = {}
         self.mathematical_models: Dict[str, MathematicalModel] = {}
         self.literature_database: Dict[str, LiteratureReference] = {}
@@ -306,7 +306,7 @@ class TheoreticalAgent(BaseAgent):
             MessagesPlaceholder(variable_name="agent_scratchpad"),
         ])
         
-        agent = create_openai_functions_agent(self.llm, self.act, prompt)
+        agent = create_openai_functions_agent(self.llm, self.tools, prompt)
         return AgentExecutor(agent=agent, tools=self.tools, verbose=True)
     
     def create_pendulum_model(self, complexity: str = "simple") -> str:

@@ -5,11 +5,12 @@ Test script for CommunicationAgent functionality
 
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from src.agents.communication_agent import CommunicationAgent, Message
-from src.agents.experimental_agent import ExperimentalAgent
-from src.agents.theoretical_agent import TheoreticalAgent
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.communication.protocol import CommunicationAgent, Message
+from src.agents.core.experimental_agent import ExperimentalAgent
+from src.agents.core.theoretical_agent import TheoreticalAgent
 
 
 def test_communication_agent():
@@ -22,15 +23,19 @@ def test_communication_agent():
     theo_agent = TheoreticalAgent("TheoAgent-1")
     
     # Register agents with communication system
-    print("📝 Registering agents...")
+    print("Registering agents...")
     comm_agent.register_agent("ExpAgent-1", ["experimental_design", "data_collection"], "active")
     comm_agent.register_agent("TheoAgent-1", ["hypothesis_generation", "mathematical_modeling"], "active")
     
-    print("\n📊 Agent Registry Status:")
-    print(comm_agent.list_registered_agents())
+    print("\nAgent Registry Status:")
+    print(comm_agent.agent_executor.invoke({
+    "input": "list registered agents",
+    "chat_history": [],          
+    "agent_scratchpad": []       
+}))
     
     # Test message routing
-    print("\n📨 Testing message routing...")
+    print("\nTesting message routing...")
     
     # Test 1: Valid message
     message1 = Message(
@@ -44,7 +49,7 @@ def test_communication_agent():
     print(f"Message 1: {result1}")
     
     # Test 2: Broadcast message
-    print("\n📢 Testing broadcast...")
+    print("\nTesting broadcast...")
     broadcast_result = comm_agent.broadcast_message(
         "Starting pendulum experiment phase 1", 
         "notification"
@@ -52,14 +57,14 @@ def test_communication_agent():
     print(f"Broadcast: {broadcast_result}")
     
     # Test 3: Get conversation history
-    print("\n📚 Getting conversation history...")
+    print("\nGetting conversation history...")
     history = comm_agent.get_conversation_history("ExpAgent-1", "TheoAgent-1")
     print(f"Conversation history: {len(history)} messages")
     for msg in history:
         print(f"  {msg.timestamp.strftime('%H:%M:%S')} - {msg.sender} → {msg.recipient}: {msg.content[:50]}...")
     
     # Test 4: Status report
-    print("\n📊 Communication Agent Status Report:")
+    print("\nCommunication Agent Status Report:")
     print(comm_agent.get_status_report())
     
     # Test 5: LangChain integration
@@ -72,7 +77,7 @@ def test_communication_agent():
     except Exception as e:
         print(f"LangChain test failed (expected if no API key): {e}")
     
-    print("\n✅ Communication Agent test completed!")
+    print("\nCommunication Agent test completed!")
 
 
 if __name__ == "__main__":

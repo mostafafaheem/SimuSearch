@@ -1,15 +1,14 @@
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 import json
+from ..agents.chat_wrappers import ChatOpenRouter
 from langchain.schema import BaseMessage, HumanMessage, AIMessage, SystemMessage
-from langchain_openai import ChatOpenAI
 from langchain.tools import BaseTool
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from pydantic import BaseModel, Field
-from .base_agent import BaseAgent
-
-
+from ..agents.base_agent import BaseAgent
+from ..agents import api_key
 class Message(BaseModel):
     """Structured message for inter-agent communication"""
     sender: str
@@ -40,7 +39,7 @@ class CommunicationAgent(BaseAgent):
     
     def __init__(self, name: str, llm_model: str = "gpt-4", temperature: float = 0.1):
         super().__init__(name)
-        self.llm = ChatOpenAI(model=llm_model, temperature=temperature)
+        self.llm = ChatOpenRouter(model=llm_model, temperature=temperature, openai_api_key=api_key)
         self.message_queue: List[Message] = []
         self.agent_registry: Dict[str, Dict[str, Any]] = {}
         self.communication_protocols: Dict[str, CommunicationProtocol] = {}
