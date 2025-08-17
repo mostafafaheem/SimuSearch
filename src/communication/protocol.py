@@ -1,14 +1,14 @@
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 import json
-from ..agents.chat_wrappers import ChatOpenRouter
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.schema import BaseMessage, HumanMessage, AIMessage, SystemMessage
 from langchain.tools import BaseTool
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from pydantic import BaseModel, Field
 from ..agents.base_agent import BaseAgent
-from ..agents import api_key
+from ..config import api_key
 class Message(BaseModel):
     """Structured message for inter-agent communication"""
     sender: str
@@ -37,9 +37,13 @@ class CommunicationAgent(BaseAgent):
     - Coordination between research agents
     """
     
-    def __init__(self, name: str, llm_model: str = "gpt-4", temperature: float = 0.1):
+    def __init__(self, name: str, llm_model: str = "gemini-2.0-flash", temperature: float = 0.1):
         super().__init__(name)
-        self.llm = ChatOpenRouter(model=llm_model, temperature=temperature, openai_api_key=api_key)
+        self.llm = ChatGoogleGenerativeAI(
+            model=llm_model,
+            google_api_key=api_key,
+            temperature=temperature
+        )
         self.message_queue: List[Message] = []
         self.agent_registry: Dict[str, Dict[str, Any]] = {}
         self.communication_protocols: Dict[str, CommunicationProtocol] = {}

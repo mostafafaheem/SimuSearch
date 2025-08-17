@@ -4,9 +4,7 @@ Test script for CommunicationAgent functionality
 """
 
 import sys
-import os
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(sys.path[0])
 
 from src.communication.protocol import CommunicationAgent, Message
 from src.agents.core.experimental_agent import ExperimentalAgent

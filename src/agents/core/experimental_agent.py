@@ -4,12 +4,13 @@ import json
 import numpy as np
 from dataclasses import dataclass
 from langchain.schema import BaseMessage, HumanMessage, AIMessage, SystemMessage
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.tools import BaseTool
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from pydantic import BaseModel, Field
 from ..base_agent import BaseAgent
+from ...config import api_key
 
 
 @dataclass
@@ -47,9 +48,13 @@ class ExperimentalAgent(BaseAgent):
     - Quality control and validation
     """
     
-    def __init__(self, name: str, llm_model: str = "gpt-4", temperature: float = 0.1):
+    def __init__(self, name: str, llm_model: str = "gemini-2.0-flash", temperature: float = 0.1):
         super().__init__(name)
-        self.llm = ChatOpenAI(model=llm_model, temperature=temperature)
+        self.llm = ChatGoogleGenerativeAI(
+            model=llm_model,
+            google_api_key=api_key,
+            temperature=temperature
+        )
         self.experiments: Dict[str, Experiment] = {}
         self.data_collection: Dict[str, List[DataPoint]] = {}
         self.equipment_status: Dict[str, str] = {}
